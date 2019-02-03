@@ -112,6 +112,13 @@ impl DE2000 {
 
         DE2000::new(lab_1, lab_2)
     }
+
+    pub fn from_rgb_f32(color_1: &[f32; 3], color_2: &[f32; 3]) -> f32 {
+        let lab_1 = Lab::from_rgb_f32(color_1);
+        let lab_2 = Lab::from_rgb_f32(color_2);
+
+        DE2000::new(lab_1, lab_2)
+    }
 }
 
 fn get_h_prime_fn(x: f32, y: f32) -> f32 {
