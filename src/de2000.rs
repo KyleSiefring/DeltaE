@@ -46,12 +46,12 @@ impl DE2000 {
         let c1 = (color_1.a.powi(2) + color_1.b.powi(2)).sqrt();
         let c2 = (color_2.a.powi(2) + color_2.b.powi(2)).sqrt();
 
-        let c_bar = (c1 + c2) / 2.0;
+        let (a_prime_1, a_prime_2) = {
+            let c_bar = (c1 + c2) / 2.0;
 
-        let a_prime_1 =
-            color_1.a + (color_1.a / 2.0) * (1.0 - (c_bar.powi(7) / (c_bar.powi(7) + 25f32.powi(7))).sqrt());
-        let a_prime_2 =
-            color_2.a + (color_2.a / 2.0) * (1.0 - (c_bar.powi(7) / (c_bar.powi(7) + 25f32.powi(7))).sqrt());
+            let tmp = 1.0 - (c_bar.powi(7) / (c_bar.powi(7) + 25f32.powi(7))).sqrt();
+            (color_1.a + (color_1.a / 2.0) * tmp, color_2.a + (color_2.a / 2.0) * tmp)
+        };
 
         let c_prime_1 = (a_prime_1.powi(2) + color_1.b.powi(2)).sqrt();
         let c_prime_2 = (a_prime_2.powi(2) + color_2.b.powi(2)).sqrt();
@@ -171,7 +171,7 @@ fn get_upcase_t(upcase_h_bar_prime: f32) -> f32 {
 }
 
 fn get_r_sub_t(c_bar_prime: f32, upcase_h_bar_prime: f32) -> f32 {
-    let degrees = (radians_to_degrees(upcase_h_bar_prime) - 275.0) / 25.0;
+    let degrees = (radians_to_degrees(upcase_h_bar_prime) - 275.0) * (1.0 / 25.0);
     -2.0 * (c_bar_prime.powi(7) / (c_bar_prime.powi(7) + 25f32.powi(7))).sqrt() *
     (degrees_to_radians(60.0 * (-(degrees.powi(2))).exp())).sin()
 }
