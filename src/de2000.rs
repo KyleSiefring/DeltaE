@@ -2,6 +2,8 @@ use super::{f32, Lab};
 
 pub struct DE2000;
 
+use std::f32::consts::PI;
+
 impl DE2000 {
     /// Returns the difference between two `Lab` colors.
     ///
@@ -69,7 +71,7 @@ impl DE2000 {
         let delta_h_prime = get_delta_h_prime(c1, c2, h_prime_1, h_prime_2);
 
         let delta_upcase_h_prime = 2.0 * (c_prime_1 * c_prime_2).sqrt() *
-                                   (degrees_to_radians(delta_h_prime) / 2.0).sin();
+                                   ((delta_h_prime) / 2.0).sin();
 
         let upcase_h_bar_prime = get_upcase_h_bar_prime(h_prime_1, h_prime_2);
 
@@ -128,10 +130,10 @@ fn get_h_prime_fn(x: f32, y: f32) -> f32 {
         return 0.0;
     }
 
-    hue_angle = radians_to_degrees(x.atan2(y));
+    hue_angle = x.atan2(y);
 
     if hue_angle < 0.0 {
-        hue_angle += 360.0;
+        hue_angle += 2. * PI;
     }
 
     hue_angle
@@ -142,35 +144,36 @@ fn get_delta_h_prime(c1: f32, c2: f32, h_prime_1: f32, h_prime_2: f32) -> f32 {
         return 0.0;
     }
 
-    if (h_prime_1 - h_prime_2).abs() <= 180.0 {
+    if (h_prime_1 - h_prime_2).abs() <= PI {
         return h_prime_2 - h_prime_1;
     }
 
     if h_prime_2 <= h_prime_1 {
-        h_prime_2 - h_prime_1 + 360.0
+        h_prime_2 - h_prime_1 + 2. * PI
     } else {
-        h_prime_2 - h_prime_1 - 360.0
+        h_prime_2 - h_prime_1 - 2. * PI
     }
 }
 
 fn get_upcase_h_bar_prime(h_prime_1: f32, h_prime_2: f32) -> f32 {
-    if (h_prime_1 - h_prime_2).abs() > 180.0 {
-        return (h_prime_1 + h_prime_2 + 360.0) / 2.0;
+    if (h_prime_1 - h_prime_2).abs() > PI {
+        return (h_prime_1 + h_prime_2 + 2.0 * PI) / 2.0;
     }
 
     (h_prime_1 + h_prime_2) / 2.0
 }
 
 fn get_upcase_t(upcase_h_bar_prime: f32) -> f32 {
-    1.0 - 0.17 * (degrees_to_radians(upcase_h_bar_prime - 30.0)).cos() +
-    0.24 * (degrees_to_radians(2.0 * upcase_h_bar_prime)).cos() +
-    0.32 * (degrees_to_radians(3.0 * upcase_h_bar_prime + 6.0)).cos() -
-    0.20 * (degrees_to_radians(4.0 * upcase_h_bar_prime - 63.0)).cos()
+    1.0 - 0.17 * (upcase_h_bar_prime - PI / 6.0).cos() +
+    0.24 * (2.0 * upcase_h_bar_prime).cos() +
+    0.32 * (3.0 * upcase_h_bar_prime + PI / 30.0).cos() -
+    0.20 * (4.0 * upcase_h_bar_prime - 7.0 * PI / 20.0).cos()
 }
 
 fn get_r_sub_t(c_bar_prime: f32, upcase_h_bar_prime: f32) -> f32 {
+    let degrees = (radians_to_degrees(upcase_h_bar_prime) - 275.0) / 25.0;
     -2.0 * (c_bar_prime.powi(7) / (c_bar_prime.powi(7) + 25f32.powi(7))).sqrt() *
-    (degrees_to_radians(60.0 * (-(((upcase_h_bar_prime - 275.0) / 25.0).powi(2))).exp())).sin()
+    (degrees_to_radians(60.0 * (-(degrees.powi(2))).exp())).sin()
 }
 
 fn radians_to_degrees(radians: f32) -> f32 {
