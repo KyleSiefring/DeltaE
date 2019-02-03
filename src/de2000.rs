@@ -33,9 +33,9 @@ impl DE2000 {
     /// ```
 
     pub fn new(color_1: Lab, color_2: Lab) -> f32 {
-        let ksub_l = 1.0;
+        let ksub_l = 0.65;
         let ksub_c = 1.0;
-        let ksub_h = 1.0;
+        let ksub_h = 4.0;
 
         let delta_l_prime = color_2.l - color_1.l;
 
