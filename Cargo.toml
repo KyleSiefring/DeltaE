@@ -12,5 +12,5 @@ categories = ["algorithms", "multimedia::images"]
 license = "MIT"
 
 [dependencies]
-#lab = "0.4.2"
-lab = {path = "../lab"}
+#lab = {path = "../lab"}
+lab = { git = "https://github.com/KyleSiefring/lab", branch = "dump_ciede2000" }
